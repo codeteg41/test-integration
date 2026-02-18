@@ -3,6 +3,7 @@ import { DashboardShell } from "@/components/dashboard-shell";
 import { motion } from "framer-motion";
 import { User, Bell, Shield, Palette, Globe, Zap, Save, } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useState } from "react";
 const sections = [
     { id: "profile", label: "Profil", icon: User },
@@ -12,8 +13,22 @@ const sections = [
     { id: "integrations", label: "Integrations", icon: Zap },
     { id: "language", label: "Langue", icon: Globe },
 ];
+const defaultProfile = {
+    firstName: "Admin",
+    lastName: "PulsAI",
+    email: "admin@pulsai.io",
+    role: "Administrateur",
+};
+const defaultNotifications = {
+    newTickets: true,
+    newConversations: true,
+    campaigns: false,
+    teamMentions: true,
+};
 export default function SettingsPage() {
-    const [activeSection, setActiveSection] = useState("profile");
+    const { value: activeSection, setValue: setActiveSection } = useLocalStorage("pulsai-settings-section", "profile");
+    const { value: profile, setValue: setProfile } = useLocalStorage("pulsai-settings-profile", defaultProfile);
+    const { value: notifications, setValue: setNotifications } = useLocalStorage("pulsai-settings-notifications", defaultNotifications);
     const [saved, setSaved] = useState(false);
     const handleSave = () => {
         setSaved(true);
@@ -71,25 +86,25 @@ export default function SettingsPage() {
                       <label className="text-sm font-medium text-card-foreground">
                         Prenom
                       </label>
-                      <input type="text" defaultValue="Admin" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"/>
+                      <input type="text" value={profile.firstName} onChange={(e) => setProfile((prev) => (Object.assign(Object.assign({}, prev), { firstName: e.target.value })))} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"/>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-card-foreground">
                         Nom
                       </label>
-                      <input type="text" defaultValue="PulsAI" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"/>
+                      <input type="text" value={profile.lastName} onChange={(e) => setProfile((prev) => (Object.assign(Object.assign({}, prev), { lastName: e.target.value })))} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"/>
                     </div>
                     <div className="col-span-2">
                       <label className="text-sm font-medium text-card-foreground">
                         Email
                       </label>
-                      <input type="email" defaultValue="admin@pulsai.io" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"/>
+                      <input type="email" value={profile.email} onChange={(e) => setProfile((prev) => (Object.assign(Object.assign({}, prev), { email: e.target.value })))} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"/>
                     </div>
                     <div className="col-span-2">
                       <label className="text-sm font-medium text-card-foreground">
                         Role
                       </label>
-                      <input type="text" defaultValue="Administrateur" disabled className="mt-1 w-full rounded-lg border border-border bg-muted px-3 py-2.5 text-sm text-muted-foreground"/>
+                      <input type="text" value={profile.role} disabled className="mt-1 w-full rounded-lg border border-border bg-muted px-3 py-2.5 text-sm text-muted-foreground"/>
                     </div>
                   </div>
                 </div>
@@ -109,17 +124,17 @@ export default function SettingsPage() {
                 </h3>
                 <div className="space-y-4">
                   {[
-                { label: "Nouveaux tickets", desc: "Recevoir une alerte quand un ticket est cree", defaultOn: true },
-                { label: "Nouvelles conversations", desc: "Notifications pour les messages entrants", defaultOn: true },
-                { label: "Campagnes", desc: "Rapports de performance des campagnes", defaultOn: false },
-                { label: "Mentions d'equipe", desc: "Quand quelqu'un vous mentionne", defaultOn: true },
-            ].map((notif) => (<div key={notif.label} className="flex items-center justify-between py-3 border-b border-border/50 last:border-0">
+                { key: "newTickets", label: "Nouveaux tickets", desc: "Recevoir une alerte quand un ticket est cree" },
+                { key: "newConversations", label: "Nouvelles conversations", desc: "Notifications pour les messages entrants" },
+                { key: "campaigns", label: "Campagnes", desc: "Rapports de performance des campagnes" },
+                { key: "teamMentions", label: "Mentions d'equipe", desc: "Quand quelqu'un vous mentionne" },
+            ].map((notif) => (<div key={notif.key} className="flex items-center justify-between py-3 border-b border-border/50 last:border-0">
                       <div>
                         <p className="text-sm font-medium text-card-foreground">{notif.label}</p>
                         <p className="text-xs text-muted-foreground">{notif.desc}</p>
                       </div>
                       <label className="relative inline-flex cursor-pointer items-center">
-                        <input type="checkbox" defaultChecked={notif.defaultOn} className="peer sr-only"/>
+                        <input type="checkbox" checked={!!notifications[notif.key]} onChange={(e) => setNotifications((prev) => (Object.assign(Object.assign({}, prev), { [notif.key]: e.target.checked })))} className="peer sr-only"/>
                         <div className="h-6 w-11 rounded-full bg-muted peer-checked:bg-primary after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-card after:transition-transform peer-checked:after:translate-x-full"/>
                       </label>
                     </div>))}

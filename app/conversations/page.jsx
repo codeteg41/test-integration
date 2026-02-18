@@ -26,13 +26,26 @@ export default function ConversationsPage() {
     const [selectedId, setSelectedId] = useState(null);
     const [newMessage, setNewMessage] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [activeChannel, setActiveChannel] = useState("all");
     const messagesEndRef = useRef(null);
     const selected = conversations.find((c) => c.id === selectedId);
-    const filteredConversations = conversations.filter((c) => c.contactName.toLowerCase().includes(searchQuery.toLowerCase()));
+    const filteredConversations = conversations
+        .filter((c) => c.contactName.toLowerCase().includes(searchQuery.toLowerCase()))
+        .filter((c) => activeChannel === "all" || c.channel === activeChannel);
     useEffect(() => {
         var _a;
         (_a = messagesEndRef.current) === null || _a === void 0 ? void 0 : _a.scrollIntoView({ behavior: "smooth" });
     }, [selected === null || selected === void 0 ? void 0 : selected.messages.length]);
+    useEffect(() => {
+        const syncQuery = (query) => setSearchQuery(query || "");
+        syncQuery(window.localStorage.getItem("pulsai-global-search") || "");
+        const handler = (event) => {
+            const query = (event === null || event === void 0 ? void 0 : event.detail) ? event.detail.query : "";
+            syncQuery(query);
+        };
+        window.addEventListener("pulsai:global-search", handler);
+        return () => window.removeEventListener("pulsai:global-search", handler);
+    }, []);
     const handleSendMessage = () => {
         if (!newMessage.trim() || !selectedId)
             return;
@@ -85,7 +98,9 @@ export default function ConversationsPage() {
 
           {/* Channel Tabs */}
           <div className="flex gap-1 p-3 border-b border-border">
-            {["all", "chat", "email", "whatsapp"].map((ch) => (<button key={ch} className="flex-1 rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-colors capitalize">
+            {["all", "chat", "email", "whatsapp"].map((ch) => (<button key={ch} onClick={() => setActiveChannel(ch)} className={cn("flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors capitalize", activeChannel === ch
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted")}>
                 {ch === "all" ? "Tous" : ch}
               </button>))}
           </div>
@@ -94,7 +109,12 @@ export default function ConversationsPage() {
           <div className="max-h-[45vh] flex-1 overflow-y-auto xl:max-h-none">
             {filteredConversations.map((conv) => {
             const ChIcon = channelIcons[conv.channel];
-            return (<motion.button key={conv.id} whileTap={{ scale: 0.98 }} onClick={() => setSelectedId(conv.id)} className={cn("w-full flex items-start gap-3 p-4 text-left border-b border-border/50 transition-colors", selectedId === conv.id
+            return (<motion.button key={conv.id} whileTap={{ scale: 0.98 }} onClick={() => {
+                    setSelectedId(conv.id);
+                    if (conv.unread > 0) {
+                        setConversations((prev) => prev.map((c) => c.id === conv.id ? Object.assign(Object.assign({}, c), { unread: 0 }) : c));
+                    }
+                }} className={cn("w-full flex items-start gap-3 p-4 text-left border-b border-border/50 transition-colors", selectedId === conv.id
                     ? "bg-accent"
                     : "hover:bg-muted/50")}>
                   <div className="relative">
@@ -123,6 +143,10 @@ export default function ConversationsPage() {
                     </span>)}
                 </motion.button>);
         })}
+            {filteredConversations.length === 0 && (<div className="flex flex-col items-center justify-center py-10 text-center">
+                <Search className="mb-2 h-8 w-8 text-muted-foreground/40"/>
+                <p className="text-sm text-muted-foreground">Aucune conversation trouvee.</p>
+              </div>)}
           </div>
         </div>
 

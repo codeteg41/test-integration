@@ -1,9 +1,11 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { LayoutDashboard, MessageSquare, Ticket, Megaphone, Users, Settings, Bot, ChevronLeft, ChevronRight, LogOut, X, } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { defaultConversations, defaultTickets } from "@/lib/crm-data";
 const navItems = [
     {
         label: "Dashboard",
@@ -42,10 +44,22 @@ const bottomItems = [
 ];
 export function AppSidebar({ collapsed, onCollapsedChange, mobileOpen, onMobileClose, }) {
     const pathname = usePathname();
+    const router = useRouter();
+    const { value: conversations } = useLocalStorage("pulsai-conversations", defaultConversations);
+    const { value: tickets } = useLocalStorage("pulsai-tickets", defaultTickets);
+    const navBadges = {
+        "/conversations": conversations.reduce((sum, c) => sum + c.unread, 0),
+        "/tickets": tickets.filter((t) => t.status === "open" || t.status === "in-progress").length,
+    };
     const handleNavClick = () => {
         if (onMobileClose) {
             onMobileClose();
         }
+    };
+    const handleLogout = () => {
+        window.localStorage.removeItem("pulsai-auth");
+        window.localStorage.removeItem("pulsai-user");
+        router.push("/login");
     };
     return (<motion.aside initial={false} animate={{ width: collapsed ? 72 : 260 }} transition={{ duration: 0.3, ease: "easeInOut" }} className={cn("fixed left-0 top-0 z-40 flex h-screen flex-col bg-sidebar-bg border-r border-sidebar-border", "w-[260px] -translate-x-full transition-transform duration-300 lg:translate-x-0", mobileOpen && "translate-x-0")}>
       {/* Logo */}
@@ -82,8 +96,8 @@ export function AppSidebar({ collapsed, onCollapsedChange, mobileOpen, onMobileC
                   {!collapsed && (<motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1">
                       {item.label}
                     </motion.span>)}
-                  {!collapsed && item.badge && (<span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
-                      {item.badge}
+                  {!collapsed && typeof navBadges[item.href] === "number" && (<span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+                      {navBadges[item.href] > 99 ? "99+" : navBadges[item.href]}
                     </span>)}
                 </motion.div>
               </Link>);
@@ -105,7 +119,7 @@ export function AppSidebar({ collapsed, onCollapsedChange, mobileOpen, onMobileC
             </Link>);
         })}
 
-        <button className={cn("mt-3 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors", "bg-destructive/15 text-destructive hover:bg-destructive/20")}>
+        <button onClick={handleLogout} className={cn("mt-3 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors", "bg-destructive/15 text-destructive hover:bg-destructive/20")}>
           <LogOut className="h-5 w-5 shrink-0"/>
           {!collapsed && <span>Deconnexion</span>}
         </button>

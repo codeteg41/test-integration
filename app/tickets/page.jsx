@@ -5,7 +5,7 @@ import { defaultTickets } from "@/lib/crm-data";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Plus, Search, Filter, ChevronDown, AlertCircle, Clock, CheckCircle2, XCircle, User, Calendar, X, } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const statusConfig = {
     open: { label: "Ouvert", color: "bg-primary/15 text-primary", icon: AlertCircle },
     "in-progress": { label: "En cours", color: "bg-chart-4/15 text-chart-4", icon: Clock },
@@ -22,6 +22,7 @@ export default function TicketsPage() {
     const { value: tickets, setValue: setTickets } = useLocalStorage("pulsai-tickets", defaultTickets);
     const [filterStatus, setFilterStatus] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
+    const [filterPriority, setFilterPriority] = useState("all");
     const [showNewTicket, setShowNewTicket] = useState(false);
     const [newTicket, setNewTicket] = useState({
         title: "",
@@ -32,10 +33,21 @@ export default function TicketsPage() {
     });
     const filtered = tickets.filter((t) => {
         const matchesStatus = filterStatus === "all" || t.status === filterStatus;
+        const matchesPriority = filterPriority === "all" || t.priority === filterPriority;
         const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             t.contact.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesStatus && matchesSearch;
+        return matchesStatus && matchesPriority && matchesSearch;
     });
+    useEffect(() => {
+        const syncQuery = (query) => setSearchQuery(query || "");
+        syncQuery(window.localStorage.getItem("pulsai-global-search") || "");
+        const handler = (event) => {
+            const query = (event === null || event === void 0 ? void 0 : event.detail) ? event.detail.query : "";
+            syncQuery(query);
+        };
+        window.addEventListener("pulsai:global-search", handler);
+        return () => window.removeEventListener("pulsai:global-search", handler);
+    }, []);
     const statusCounts = {
         all: tickets.length,
         open: tickets.filter((t) => t.status === "open").length,
@@ -108,11 +120,17 @@ export default function TicketsPage() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
             <input type="text" placeholder="Rechercher un ticket..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"/>
           </div>
-          <button className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted transition-colors">
+          <div className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-muted-foreground transition-colors">
             <Filter className="h-4 w-4"/>
-            Filtrer
+            <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className="bg-transparent text-sm focus:outline-none">
+              <option value="all">Toutes priorites</option>
+              <option value="low">Basse</option>
+              <option value="medium">Moyenne</option>
+              <option value="high">Haute</option>
+              <option value="urgent">Urgente</option>
+            </select>
             <ChevronDown className="h-3 w-3"/>
-          </button>
+          </div>
         </div>
 
         {/* Tickets List */}
