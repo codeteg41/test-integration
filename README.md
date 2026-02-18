@@ -30,6 +30,9 @@ npm run dev
 ## Captures d'écran des principales pages
 Ajoute les images dans `docs/screenshots/` avec les noms ci-dessous.
 
+### Login
+![Login](docs/screenshots/login.png)
+
 ### Dashboard
 ![Dashboard](docs/screenshots/dashboard.png)
 
