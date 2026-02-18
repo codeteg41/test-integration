@@ -64,9 +64,9 @@ export default function ConversationsPage() {
         }, 1500);
     };
     return (<DashboardShell>
-      <div className="flex min-h-[calc(100vh-4rem)] flex-col lg:h-[calc(100vh-4rem)] lg:flex-row">
+      <div className="flex min-h-[calc(100vh-4rem)] flex-col xl:h-[calc(100vh-4rem)] xl:flex-row">
         {/* Conversation List */}
-        <div className={cn("w-full flex-shrink-0 flex-col border-b border-border bg-card lg:flex lg:w-80 lg:border-b-0 lg:border-r", selectedId ? "hidden lg:flex" : "flex")}>
+        <div className={cn("w-full flex-shrink-0 flex-col border-b border-border bg-card xl:flex xl:w-80 xl:border-b-0 xl:border-r", selectedId ? "hidden xl:flex" : "flex")}>
           {/* Header */}
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between mb-3">
@@ -91,7 +91,7 @@ export default function ConversationsPage() {
           </div>
 
           {/* List */}
-          <div className="max-h-[45vh] flex-1 overflow-y-auto lg:max-h-none">
+          <div className="max-h-[45vh] flex-1 overflow-y-auto xl:max-h-none">
             {filteredConversations.map((conv) => {
             const ChIcon = channelIcons[conv.channel];
             return (<motion.button key={conv.id} whileTap={{ scale: 0.98 }} onClick={() => setSelectedId(conv.id)} className={cn("w-full flex items-start gap-3 p-4 text-left border-b border-border/50 transition-colors", selectedId === conv.id
@@ -127,12 +127,12 @@ export default function ConversationsPage() {
         </div>
 
         {/* Chat Area */}
-        <div className={cn("flex-1 flex-col", selectedId ? "flex" : "hidden lg:flex")}>
+        <div className={cn("flex-1 flex-col", selectedId ? "flex" : "hidden xl:flex")}>
           {selected ? (<>
               {/* Chat Header */}
               <div className="flex items-center justify-between border-b border-border bg-card px-6 py-3">
                 <div className="flex items-center gap-3">
-                  <button onClick={() => setSelectedId(null)} className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted transition-colors lg:hidden">
+                  <button onClick={() => setSelectedId(null)} className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted transition-colors xl:hidden">
                     <ArrowLeft className="h-4 w-4"/>
                   </button>
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
