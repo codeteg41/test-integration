@@ -4,7 +4,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { defaultConversations } from "@/lib/crm-data";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Search, Send, Sparkles, MessageSquare, Mail, Phone, MoreVertical, Paperclip, Smile, Bot, User, Headphones, Hash, } from "lucide-react";
+import { Search, Send, Sparkles, MessageSquare, Mail, Phone, MoreVertical, Paperclip, Smile, Bot, User, Headphones, Hash, ArrowLeft, } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 const channelIcons = {
     chat: MessageSquare,
@@ -66,7 +66,7 @@ export default function ConversationsPage() {
     return (<DashboardShell>
       <div className="flex min-h-[calc(100vh-4rem)] flex-col lg:h-[calc(100vh-4rem)] lg:flex-row">
         {/* Conversation List */}
-        <div className="w-full flex-shrink-0 flex flex-col border-b border-border bg-card lg:w-80 lg:border-b-0 lg:border-r">
+        <div className={cn("w-full flex-shrink-0 flex-col border-b border-border bg-card lg:flex lg:w-80 lg:border-b-0 lg:border-r", selectedId ? "hidden lg:flex" : "flex")}>
           {/* Header */}
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between mb-3">
@@ -127,11 +127,14 @@ export default function ConversationsPage() {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col">
+        <div className={cn("flex-1 flex-col", selectedId ? "flex" : "hidden lg:flex")}>
           {selected ? (<>
               {/* Chat Header */}
               <div className="flex items-center justify-between border-b border-border bg-card px-6 py-3">
                 <div className="flex items-center gap-3">
+                  <button onClick={() => setSelectedId(null)} className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted transition-colors lg:hidden">
+                    <ArrowLeft className="h-4 w-4"/>
+                  </button>
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
                     {selected.contactAvatar}
                   </div>
