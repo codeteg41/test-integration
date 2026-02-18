@@ -30,9 +30,9 @@ export default function SettingsPage() {
           </p>
         </motion.div>
 
-        <div className="flex gap-8">
+        <div className="flex flex-col gap-8 lg:flex-row">
           {/* Settings Sidebar */}
-          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="w-56 shrink-0">
+          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="w-full shrink-0 lg:w-56">
             <nav className="space-y-1">
               {sections.map((s) => (<button key={s.id} onClick={() => setActiveSection(s.id)} className={cn("flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors", activeSection === s.id
                 ? "bg-accent text-accent-foreground"

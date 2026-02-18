@@ -103,12 +103,12 @@ export default function TicketsPage() {
         </div>
 
         {/* Search */}
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
             <input type="text" placeholder="Rechercher un ticket..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"/>
           </div>
-          <button className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted transition-colors">
+          <button className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted transition-colors">
             <Filter className="h-4 w-4"/>
             Filtrer
             <ChevronDown className="h-3 w-3"/>

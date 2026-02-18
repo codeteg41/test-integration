@@ -64,9 +64,9 @@ export default function ConversationsPage() {
         }, 1500);
     };
     return (<DashboardShell>
-      <div className="flex h-screen">
+      <div className="flex min-h-[calc(100vh-4rem)] flex-col lg:h-[calc(100vh-4rem)] lg:flex-row">
         {/* Conversation List */}
-        <div className="w-80 flex-shrink-0 flex flex-col border-r border-border bg-card">
+        <div className="w-full flex-shrink-0 flex flex-col border-b border-border bg-card lg:w-80 lg:border-b-0 lg:border-r">
           {/* Header */}
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between mb-3">
@@ -91,7 +91,7 @@ export default function ConversationsPage() {
           </div>
 
           {/* List */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="max-h-[45vh] flex-1 overflow-y-auto lg:max-h-none">
             {filteredConversations.map((conv) => {
             const ChIcon = channelIcons[conv.channel];
             return (<motion.button key={conv.id} whileTap={{ scale: 0.98 }} onClick={() => setSelectedId(conv.id)} className={cn("w-full flex items-start gap-3 p-4 text-left border-b border-border/50 transition-colors", selectedId === conv.id

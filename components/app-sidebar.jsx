@@ -2,9 +2,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, MessageSquare, Ticket, Megaphone, Users, Settings, Bot, ChevronLeft, ChevronRight, LogOut, } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Ticket, Megaphone, Users, Settings, Bot, ChevronLeft, ChevronRight, LogOut, X, } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 const navItems = [
     {
         label: "Dashboard",
@@ -41,10 +40,14 @@ const bottomItems = [
         icon: Settings,
     },
 ];
-export function AppSidebar() {
+export function AppSidebar({ collapsed, onCollapsedChange, mobileOpen, onMobileClose, }) {
     const pathname = usePathname();
-    const [collapsed, setCollapsed] = useState(false);
-    return (<motion.aside initial={false} animate={{ width: collapsed ? 72 : 260 }} transition={{ duration: 0.3, ease: "easeInOut" }} className="fixed left-0 top-0 z-40 flex h-screen flex-col bg-sidebar-bg border-r border-sidebar-border">
+    const handleNavClick = () => {
+        if (onMobileClose) {
+            onMobileClose();
+        }
+    };
+    return (<motion.aside initial={false} animate={{ width: collapsed ? 72 : 260 }} transition={{ duration: 0.3, ease: "easeInOut" }} className={cn("fixed left-0 top-0 z-40 flex h-screen flex-col bg-sidebar-bg border-r border-sidebar-border", "w-[260px] -translate-x-full transition-transform duration-300 lg:translate-x-0", mobileOpen && "translate-x-0")}>
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 px-4 border-b border-sidebar-border">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 ring-1 ring-primary/30">
@@ -55,6 +58,9 @@ export function AppSidebar() {
               Puls<span className="text-primary">AI</span>
             </span>
           </motion.div>)}
+        <button onClick={onMobileClose} className="ml-auto flex h-8 w-8 items-center justify-center rounded-md text-sidebar-muted hover:text-sidebar-foreground lg:hidden">
+          <X className="h-4 w-4"/>
+        </button>
       </div>
 
       {/* Navigation */}
@@ -63,7 +69,7 @@ export function AppSidebar() {
           {navItems.map((item) => {
             const isActive = pathname === item.href ||
                 (item.href !== "/" && pathname.startsWith(item.href));
-            return (<Link key={item.href} href={item.href}>
+            return (<Link key={item.href} href={item.href} onClick={handleNavClick}>
                 <motion.div whileHover={{ x: 2 }} whileTap={{ scale: 0.98 }} className={cn("relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors", isActive
                     ? "bg-primary/15 text-primary"
                     : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground")}>
@@ -89,7 +95,7 @@ export function AppSidebar() {
       <div className="px-3 py-3 border-t border-sidebar-border">
         {bottomItems.map((item) => {
             const isActive = pathname === item.href;
-            return (<Link key={item.href} href={item.href}>
+            return (<Link key={item.href} href={item.href} onClick={handleNavClick}>
               <motion.div whileHover={{ x: 2 }} className={cn("flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors", isActive
                     ? "bg-primary/15 text-primary"
                     : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground")}>
@@ -106,7 +112,7 @@ export function AppSidebar() {
       </div>
 
       {/* Collapse button */}
-      <button onClick={() => setCollapsed(!collapsed)} className="absolute -right-3 top-20 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm hover:text-foreground transition-colors">
+      <button onClick={() => onCollapsedChange(!collapsed)} className="absolute -right-3 top-20 hidden h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm hover:text-foreground transition-colors lg:flex">
         {collapsed ? (<ChevronRight className="h-3 w-3"/>) : (<ChevronLeft className="h-3 w-3"/>)}
       </button>
     </motion.aside>);

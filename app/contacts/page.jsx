@@ -166,8 +166,8 @@ export default function ContactsPage() {
             </AnimatePresence>
           </div>) : (
         /* List View */
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="grid grid-cols-[1fr_1fr_120px_140px_80px] gap-4 border-b border-border bg-muted/50 px-5 py-3 text-xs font-medium text-muted-foreground">
+        <div className="rounded-xl border border-border bg-card overflow-x-auto">
+            <div className="min-w-[720px] grid grid-cols-[1fr_1fr_120px_140px_80px] gap-4 border-b border-border bg-muted/50 px-5 py-3 text-xs font-medium text-muted-foreground">
               <span>Contact</span>
               <span>Email</span>
               <span>Entreprise</span>
@@ -177,7 +177,7 @@ export default function ContactsPage() {
             <AnimatePresence>
               {filtered.map((contact, index) => {
                 const sc = statusConfig[contact.status];
-                return (<motion.div key={contact.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ delay: index * 0.03 }} className="group grid grid-cols-[1fr_1fr_120px_140px_80px] gap-4 items-center border-b border-border/50 px-5 py-3 hover:bg-muted/30 transition-colors">
+                return (<motion.div key={contact.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ delay: index * 0.03 }} className="min-w-[720px] group grid grid-cols-[1fr_1fr_120px_140px_80px] gap-4 items-center border-b border-border/50 px-5 py-3 hover:bg-muted/30 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                         {contact.avatar}
